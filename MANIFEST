@@ -1,0 +1,6 @@
+MANIFEST
+Makefile.PL
+README
+bin/kiaki
+t/00.t
+META.yml                                 Module meta-data (added by MakeMaker)

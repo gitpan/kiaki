@@ -1,0 +1,24 @@
+--- #YAML:1.0
+name:               kiaki
+version:            1.02
+abstract:           filter text into kde input action keyboard input string
+author:
+    - Leo Charre leocharre at cpan dot org
+license:            perl
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    Carp:                 1
+    Getopt::Std::Strict:  1.01
+    Test::Simple:         0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.54
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

@@ -1,0 +1,278 @@
+#!/usr/bin/perl
+use strict;
+# ABSTRACT = 'filter text into kde input action keyboard input string'
+our $VERSION = sprintf "%d.%02d", q$Revision: 1.2 $ =~ /(\d+)/g;
+use Getopt::Std::Strict 'hv';
+$opt_h and print STDERR usage() and exit;
+$opt_v and print $VERSION and exit;
+
+my $in;
+while(<>){ $in.=$_ }
+
+my @charsout;
+my @rawchars = split(//,$in);
+my $l = length @rawchars;
+### length is x chars: $l
+
+# a = A
+# A = Shift+A
+
+# translation table
+# this works with apple aluminum keyboard
+my %TRAN = (
+# entered char , keyboard key name
+qw{
+   `   `
+   1   1
+   2   2
+   3   3
+   4   4
+   5   5
+   6   6
+   7   7
+   8   8
+   9   9
+   0   0
+   -   -
+   =   =
+   q   Q
+   w   W
+   e   E
+   r   R
+   t   T
+   y   Y
+   u   U
+   i   I
+   o   O
+   p   P
+   [   [
+   ]   ]
+   \   \
+   a   A
+   s   S
+   d   D
+   f   F
+   g   G
+   h   H
+   j   J
+   k   K
+   l   L
+   ;   ;
+   '   '
+   z   Z
+   x   X
+   c   C
+   v   V
+   b   B
+   n   N
+   m   M
+   ,   ,
+   .   .
+   /   /
+   ~   Shift+`
+   !   Shift+1
+   @   Shift+2
+   #   Shift+3
+   $   Shift+4
+   %   Shift+5
+   ^   Shift+6
+   &   Shift+7
+   *   Shift+8
+   (   Shift+9
+   )   Shift+0
+   _   Shift+-
+   +   Shift+=
+   Q   Shift+Q
+   W   Shift+W
+   E   Shift+E
+   R   Shift+R
+   T   Shift+T
+   Y   Shift+Y
+   U   Shift+U
+   I   Shift+I
+   O   Shift+O
+   P   Shift+P
+},
+qw'
+   {   Shift+[
+   }   Shift+]
+   |   Shift+\
+   A   Shift+A
+   S   Shift+S
+   D   Shift+D
+   F   Shift+F
+   G   Shift+G
+   H   Shift+H
+   J   Shift+J
+   K   Shift+K
+   L   Shift+L
+   :   Shift+;
+',
+qw{
+   "   Shift+'
+   Z   Shift+Z
+   X   Shift+X
+   C   Shift+C
+   V   Shift+V
+   B   Shift+B
+   N   Shift+N
+   M   Shift+M
+   <   Shift+,
+   >   Shift+.
+   ?   Shift+/
+},
+   "\n" => 'Enter',
+   "\t" => 'Tab',
+   ' ' => 'Space',
+
+);
+
+### %TRAN
+
+my $fails=0;
+for my $char(@rawchars){
+
+   unless( exists $TRAN{$char} ){
+      warn("Not in translation table: '$char'");
+      
+      $fails++;
+      $TRAN{$char} = $char;
+   }
+   push @charsout, $TRAN{$char};
+}
+
+print join(":", @charsout);
+print "\n"; # this *is* the shell
+
+exit $fails;
+# if there are chars we know not what to do with, we warn, and we exit with code
+# but we still print
+
+
+
+sub usage {q{kiaki [OPTION]..
+filter text into kde input action keyboard input string
+
+   -h    help
+
+Try 'man kiaki' for more info.
+}}
+
+
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+kiaki - filter text into kde input action keyboard input string
+
+=head1 DESCRIPTION
+
+In kde.. if you open 
+   kde control center -> Regional & Accessibility -> Input Actions
+
+You can do some cool stuff.
+I like the input actions. I have a shortcut now that only works for a gnome terminal.
+It makes it go to cd ~/devel, clears the screen, and shows which packages are checked out
+from cvs. Awesome. Took me an hour to get working, and it's going to save me that extra second
+of typing, it will add up. I am glad I have it.
+Thing is..
+
+To use kde input actions..
+You have to enter the stuff in a funny awkward way.
+A string of text as if the keyboard were typing it.
+So that for the shortcut to type out "These Are Things", you have to freaking manually
+enter:
+
+   Shift+T:H:E:S:E:Space:Shift+A:R:E:Space:Shift+T:H:I:N:G:S:Enter
+
+Yeah.
+Forget that. Here's the alpha version of kiaki. A unix filter that will transform text input into
+those goofy kde input action strings.
+
+Spaces, tabs, carriage returns, should be entered as is, they will be translated.
+Being a unix filter, it takes stdin and spits to stdout.
+
+kiaki, acronym for Kde Input Actions Keyboard Input.
+
+=head1 USAGE
+
+kiaki [OPTIONS]..
+
+   -h           help
+
+=head2 EXIT CODE
+
+If we can translate all characters, we print the string to stdout and exit 0.
+If we cant't recognize a string, we convert the ones we can, issue warnings and leave
+unchanged ones we cannot, and exit with true error code.
+
+=head2 USAGE EXAMPLES
+
+   $ echo "These would be letters..\nEnteredls" | kiaki
+   Shift+T:H:E:S:E:Space:W:O:U:L:D:Space:B:E:Space:L:E:T:T:E:R:S:.:.:\:N:Shift+E:N:T:E:R:E:D:L:S:Enter
+
+=head1 TODO
+
+This script could do more, like automatically edit the kde config so the action is entered via the cli 
+instead of the crappy gui.
+
+=head2 Example entry 
+
+This makes Ctrl-d send a terminal to ~/devel.. etc
+
+   [Data_5_2]
+   Comment=if active window is terminal\ncd ~/devel and raise
+   Enabled=true
+   Name=leodevel
+   Type=KEYBOARD_INPUT_SHORTCUT_ACTION_DATA
+
+   [Data_5_2Actions]
+   ActionsCount=1
+
+   [Data_5_2Actions0]
+   ActiveWindow=true
+   Input=C:L:E:A:R:Enter:C:D:Space:Shift+`:/:D:E:V:E:L:Enter:L:S:Enter
+   IsDestinationWindow=false
+   Type=KEYBOARD_INPUT
+
+   [Data_5_2Conditions]
+   Comment=
+   ConditionsCount=0
+
+   [Data_5_2Triggers]
+   Comment=Simple_action
+   TriggersCount=1
+
+   [Data_5_2Triggers0]
+   Key=Alt+D
+   Type=SHORTCUT
+
+=head1 CAVEATS
+
+Is alpha.
+
+=head1 BUGS
+
+Contact the AUTHOR, who's been dumped by his girlfriend and has plenty of time for nerding.
+
+=head1 AUTHOR
+
+Leo Charre leocharre at cpan dot org
+
+=head1 LICENSE
+
+This package is free software; you can redistribute it and/or modify it under the same terms as Perl itself, i.e., under the terms of the "Artistic License" or the "GNU General Public License".
+
+=head1 DISCLAIMER
+
+This package is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the "GNU General Public License" for more details.
+
+=cut
+
+

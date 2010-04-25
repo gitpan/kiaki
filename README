@@ -1,0 +1,120 @@
+
+================================================================================
+
+kiaki - filter text into kde input action keyboard input string
+
+DESCRIPTION
+    In kde.. if you open kde control center -> Regional & Accessibility ->
+    Input Actions
+
+    You can do some cool stuff. I like the input actions. I have a shortcut
+    now that only works for a gnome terminal. It makes it go to cd ~/devel,
+    clears the screen, and shows which packages are checked out from cvs.
+    Awesome. Took me an hour to get working, and it's going to save me that
+    extra second of typing, it will add up. I am glad I have it. Thing is..
+
+    To use kde input actions.. You have to enter the stuff in a funny
+    awkward way. A string of text as if the keyboard were typing it. So that
+    for the shortcut to type out "These Are Things", you have to freaking
+    manually enter:
+
+       Shift+T:H:E:S:E:Space:Shift+A:R:E:Space:Shift+T:H:I:N:G:S:Enter
+
+    Yeah. Forget that. Here's the alpha version of kiaki. A unix filter that
+    will transform text input into those goofy kde input action strings.
+
+    Spaces, tabs, carriage returns, should be entered as is, they will be
+    translated. Being a unix filter, it takes stdin and spits to stdout.
+
+    kiaki, acronym for Kde Input Actions Keyboard Input.
+
+USAGE
+    kiaki [OPTIONS]..
+
+       -h           help
+
+  EXIT CODE
+    If we can translate all characters, we print the string to stdout and
+    exit 0. If we cant't recognize a string, we convert the ones we can,
+    issue warnings and leave unchanged ones we cannot, and exit with true
+    error code.
+
+  USAGE EXAMPLES
+       $ echo "These would be letters..\nEnteredls" | kiaki
+       Shift+T:H:E:S:E:Space:W:O:U:L:D:Space:B:E:Space:L:E:T:T:E:R:S:.:.:\:N:Shift+E:N:T:E:R:E:D:L:S:Enter
+
+TODO
+    This script could do more, like automatically edit the kde config so the
+    action is entered via the cli instead of the crappy gui.
+
+  Example entry
+    This makes Ctrl-d send a terminal to ~/devel.. etc
+
+       [Data_5_2]
+       Comment=if active window is terminal\ncd ~/devel and raise
+       Enabled=true
+       Name=leodevel
+       Type=KEYBOARD_INPUT_SHORTCUT_ACTION_DATA
+
+       [Data_5_2Actions]
+       ActionsCount=1
+
+       [Data_5_2Actions0]
+       ActiveWindow=true
+       Input=C:L:E:A:R:Enter:C:D:Space:Shift+`:/:D:E:V:E:L:Enter:L:S:Enter
+       IsDestinationWindow=false
+       Type=KEYBOARD_INPUT
+
+       [Data_5_2Conditions]
+       Comment=
+       ConditionsCount=0
+
+       [Data_5_2Triggers]
+       Comment=Simple_action
+       TriggersCount=1
+
+       [Data_5_2Triggers0]
+       Key=Alt+D
+       Type=SHORTCUT
+
+CAVEATS
+    Is alpha.
+
+BUGS
+    Contact the AUTHOR, who's been dumped by his girlfriend and has plenty
+    of time for nerding.
+
+AUTHOR
+    Leo Charre leocharre at cpan dot org
+
+LICENSE
+    This package is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself, i.e., under the terms of the
+    "Artistic License" or the "GNU General Public License".
+
+DISCLAIMER
+    This package is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    See the "GNU General Public License" for more details.
+
+
+--------------------------------------------------------------------------------
+
+
+
+REQUIRES
+
+Carp: 1
+Getopt::Std::Strict: 1.01
+Test::Simple: 0
+
+
+INSTALL
+
+   perl Makefile.PL
+   make install
+
+
+
